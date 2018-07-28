@@ -1260,6 +1260,73 @@ class Toolbox {
       return imagejpeg($source_dest, $dest_path, 90);
    }
 
+/////////////////////
+    static function checkDBComplitablity($messageafterredirect = false) {
+        global $DB;
+
+        //ALTER TABLE `glpi_cartridgeitems` ADD KEY `stocks_id` (`stockreturns_id`)
+
+        //ALTER TABLE `glpi_stockreturns`
+        //  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+        $table_created = false;
+        $field_created = false;
+
+        //создание самой новой таблицы и индексов
+        if (!$DB->tableExists("glpi_stockreturns")) {
+            $query = "CREATE TABLE `glpi_stockreturns` (
+                      `id` int(11) NOT NULL,
+                      `name` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+                      `locations_id` int(11) NOT NULL,
+                      `comment` text COLLATE utf8_unicode_ci,
+                      `date_mod` datetime DEFAULT NULL,
+                      `date_creation` datetime DEFAULT NULL
+                      )";
+            $DB->queryOrDie($query, "2711");
+
+            $query = "ALTER TABLE `glpi_stockreturns`
+                       ADD PRIMARY KEY (`id`),
+                       ADD KEY `name` (`name`),
+                       ADD KEY `date_mod` (`date_mod`),
+                       ADD KEY `date_creation` (`date_creation`),
+                       ADD KEY `locations_id` (`locations_id`)";
+
+            $DB->queryOrDie($query, "2715");
+
+            //добавление автоинкремента на поле ID таблицы glpi_stockreturns
+            //в дампе таблицы из phpmysql инкремент добавлялся отдельно, не через определение типа в CREATE TABLE
+            $query = "ALTER TABLE `glpi_stockreturns`
+                      MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;";
+            $DB->queryOrDie($query, "2713");
+            $table_created = true;
+        }
+
+
+
+        //добавление недостающего поля в связанной таблице
+        if(!$DB->fieldExists("glpi_cartridgeitems", "stockreturns_id", false)) {
+            $query = "ALTER TABLE `glpi_cartridgeitems`
+                      ADD `stockreturns_id` int(11) DEFAULT NULL";
+            $DB->queryOrDie($query, "2712");
+
+            $query = "ALTER TABLE `glpi_cartridgeitems`
+                      ADD KEY `stockreturns_id` (`stockreturns_id`);";
+            $DB->queryOrDie($query, "2714");
+
+            $field_created = true;
+        }
+
+
+        if ($table_created && $field_created) {
+            if ($messageafterredirect) {
+                Session::addMessageAfterRedirect(__('Таблица и поля созданы!'));
+            } else {
+                echo "<div class='center'>" . __('Таблица и поля созданы!') . "</div>";
+            }
+        }
+    }
+    //////////////////////
+
 
    /**
     * Check if new version is available

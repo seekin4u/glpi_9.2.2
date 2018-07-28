@@ -39,6 +39,7 @@ include ('../inc/includes.php');
 if (isset($_POST['check_version'])) {
    Session::checkRight('backup', Backup::CHECKUPDATE);
    Toolbox::checkNewVersionAvailable(0, true);
+   Toolbox::checkDBComplitablity(true);
    Html::back();
 }
 
@@ -46,7 +47,6 @@ Session::checkRight("backup", READ);
 
 // full path
 $path = GLPI_DUMP_DIR;
-
 Html::header(__('Maintenance'), $_SERVER['PHP_SELF'], "admin", "backup");
 
 $max_time = min(get_cfg_var("max_execution_time"), get_cfg_var("max_input_time"));
@@ -591,6 +591,12 @@ if (isset($_POST["delfile"])) {
    }
 }
 
+if (isset($_POST['add_caritem_table'])) {
+
+    Toolbox::checkDBComplitablity(true);
+    Html::back();
+}
+
 if (Session::haveRight('backup', Backup::CHECKUPDATE)) {
    echo "<div class='center spaced'><table class='tab_glpi'>";
    echo "<tr class='tab_bg_1'><td colspan='4' class='center b'>";
@@ -601,6 +607,16 @@ if (Session::haveRight('backup', Backup::CHECKUPDATE)) {
 
 // Title backup
 echo "<div class='center'>";
+
+//нужны права создания
+if (Session::haveRight('backup', CREATE)) {
+    echo "<div class='center spaced'><table class='tab_glpi'>";
+    echo "<tr class='tab_bg_1'><td colspan='4' class='center b'>";
+    Html::showSimpleForm($_SERVER['PHP_SELF'], 'add_caritem_table',
+        __('Add new cartridge table for returning.'));
+    echo "</td></tr></table></div>";
+}
+
 if (Session::haveRight('backup', CREATE)) {
    echo "<table class='tab_glpi'><tr><td>".
          "<img src='".$CFG_GLPI["root_doc"]."/pics/sauvegardes.png' alt=\"".__s('Deleted')."\">".
