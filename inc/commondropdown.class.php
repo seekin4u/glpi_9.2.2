@@ -294,6 +294,11 @@ abstract class CommonDropdown extends CommonDBTM {
 
                break;
 
+            case 'LocationDropdown' :
+                $param = ['value'  => $this->fields["locations_id"]];
+                Location::dropdown($param);
+                break;
+
             case 'dropdownValue' :
                $params = ['value'  => $this->fields[$field['name']],
                                'name'   => $field['name'],
