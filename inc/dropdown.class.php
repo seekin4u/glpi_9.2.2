@@ -1029,7 +1029,8 @@ class Dropdown {
              __('Fields unicity') => [
                  'Fieldblacklist' => _n('Ignored value for the unicity',
                                         'Ignored values for the unicity',
-                                        Session::getPluralNumber())
+                                        Session::getPluralNumber()),
+				 'StockReturn'           => __('Return to stock')						
              ],
 
              __('External authentications') => [

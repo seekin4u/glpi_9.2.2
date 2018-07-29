@@ -234,7 +234,15 @@ class CartridgeItem extends CommonDBTM {
       echo "<td>".__('Stock location')."</td>";
       echo "<td>";
       Location::dropdown(['value'  => $this->fields["locations_id"],
-                               'entity' => $this->fields["entities_id"]]);
+						     'entity' => $this->fields["entities_id"]]);
+      echo "";
+      echo "</td></tr>";
+
+      echo "<tr class='tab_bg_1'>";
+      echo "<td>".__('Where to return')."</td>";
+      echo "<td>";
+      StockReturn::dropdown(['value'  => $this->fields["stockreturns_id"]]);
+
       echo "</td></tr>";
 
       echo "<tr class='tab_bg_1'>";
@@ -310,6 +318,7 @@ class CartridgeItem extends CommonDBTM {
          'name'               => __('Type'),
          'datatype'           => 'dropdown'
       ];
+
 
       $tab[] = [
          'id'                 => '23',
